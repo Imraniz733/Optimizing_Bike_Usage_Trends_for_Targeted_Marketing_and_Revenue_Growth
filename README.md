@@ -29,30 +29,41 @@ The analysis was conducted using the spreadsheet, R, and the visualizations were
 
 - **Analysis Summary:**
 1. **Classic Bikes:** Classic bikes are used by both casual and member users. However, member users show a higher and more consistent usage pattern across the week compared to casual users.
--**Member users:**
+**Member users:**
    The highest number of rides is observed on day 3 (Wednesday), with 268,250.
    Usage remains relatively stable, with minor fluctuations, ending the week with 227,226 rides on day 7 (Sunday).
--**Casual users:**
+**Casual users:**
    Usage starts strong on day 1 (Monday) with 158,107 rides but experiences a significant drop in the middle of the week, reaching a low of 95,820 rides on day 3 (Wednesday).
    There's a recovery towards the end of the week, with 196,665 rides on day 7 (Sunday).
--**Interpretation:** Members prefer classic bikes for commuting, showing a steady pattern throughout the week, while casual users, likely influenced by external factors like weather or events, show more variability.
+**Interpretation:** Members prefer classic bikes for commuting, showing a steady pattern throughout the week, while casual users, likely influenced by external factors like weather or events, show more variability.
 
 2. **Docked Bikes** Docked bikes are almost exclusively used by casual users, with very limited or no usage by members.
--**Member users:**
+**Member users:**
    No significant usage was observed.
--**Casual users:**
+**Casual users:**
    The number of rides starts at 35,295 on day 1 (Monday) and decreases steadily, hitting a low of 17,155 on day 4 (Thursday).
    Usage then increases towards the weekend, peaking at 40,505 rides on day 7 (Sunday).
--**Interpretation:** Docked bikes are primarily favored by casual users, especially during the weekend, possibly for leisure or recreational activities. The lack of member usage suggests that this bike type may not meet the needs or preferences of regular commuters.
+**Interpretation:** Docked bikes are primarily favored by casual users, especially during the weekend, possibly for leisure or recreational activities. The lack of member usage suggests that this bike type may not meet the needs or preferences of regular commuters.
 
 3. **Electric Bikes** Electric bikes are popular among both casual and member users, with member users again showing higher engagement throughout the week.
--**Member users:**
+**Member users:**
    Electric bike usage starts strong with 225,937 rides on day 2 (Tuesday).
    The number of rides peaks at 264,806 on day 5 (Friday) and then slightly decreases to 215,949 on day 7 (Sunday).
--**Casual users:**
+**Casual users:**
    Usage starts at 186,132 rides on day 1 (Monday) but shows a dip in the middle of the week, reaching 149,865 rides on day 3 (Wednesday).
    There’s a steady increase towards the end of the week, with 235,062 rides on day 7 (Sunday).
--**Interpretation:** Electric bikes are well-utilized by both user groups, with members consistently favoring them for their likely convenience and speed. Casual users also show a strong preference, particularly towards the weekend, indicating a possible combination of commuting and leisure use.
+**Interpretation:** Electric bikes are well-utilized by both user groups, with members consistently favoring them for their likely convenience and speed. Casual users also show a strong preference, particularly towards the weekend, indicating a possible combination of commuting and leisure use.
 
+## Conclusion
+The analysis of bike usage across different types and user groups reveals distinct patterns:
+- Classic Bikes are favored by members for consistent use throughout the week, with casual users showing more fluctuation.
+- Docked Bikes are predominantly used by casual users, particularly during the weekend, while members show little to no interest.
+- Electric Bikes are popular among both casual and member users, with members showing a higher and more consistent usage.
 
+These insights can inform operational decisions, such as bike availability, marketing strategies, and membership promotions, ensuring that the needs of both casual and member users are met effectively.
+
+## Recomendations
+- Increase the availability of classic and electric bikes during peak times and locations based on the observed demand, especially for members.
+- Enhance marketing efforts for docked bikes to target casual users, particularly for weekend leisure activities.
+- Explore opportunities to convert casual electric bike users to members by offering promotions or benefits that highlight the convenience of membership.
 
