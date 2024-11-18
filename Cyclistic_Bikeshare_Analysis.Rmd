@@ -1,0 +1,23 @@
+# Cyclist Bike-Share Analysis
+
+## Introduction
+
+#### This project analyzes the cyclistic bike-share data-set to determine how can cyclistic maximize the number of annual memberships by converting casual riders to members and uncovering usage patterns among casual and member users.
+
+## PHASE 1: ASK
+
+## Business Goal
+
+#### How can cyclistic maximize the number of annual membership
+
+## Data
+
+#### The data for this analysis was sourced from the Cyclistic bike-share data provided by Motivate International Inc. It includes information on ride_id, ride able_type, start and end time, start and end station id or name, start and end lng or lat, member_casual.
+
+## PHASE 2: PREPARE
+
+#### * Our data is stored in csv files we are going to analyze year 2022 data
+
+```{r}
+# Load the tidyverse package library(tidyverse)
+```
