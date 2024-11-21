@@ -62,8 +62,8 @@ The analysis of bike usage across different types and user groups reveals distin
 
 These insights can inform operational decisions, such as bike availability, marketing strategies, and membership promotions, ensuring that the needs of both casual and member users are met effectively.
 
-## Recomendations
-- Increase the availability of classic and electric bikes during peak times and locations based on the observed demand, especially for members.
-- Enhance marketing efforts for docked bikes to target casual users, particularly for weekend leisure activities.
-- Explore opportunities to convert casual electric bike users to members by offering promotions or benefits that highlight the convenience of membership.
+## Recommendations
+- Cyclistic should focus on converting casual riders to annual members by promoting weekday benefits.
+- Increase availability of classic bikes during peak casual rider times.
+- Launch targeted marketing campaigns for casual riders during weekends.
 
