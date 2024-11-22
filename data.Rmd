@@ -1,0 +1,256 @@
+---
+title: "Cyclistic Bike-Share Analysis"
+output:
+  pdf_document: default
+  html_document: default
+date: "2024-11-22"
+---
+
+# Cyclistic Bike-share Analysis
+
+## Introduction
+
+#### Cyclistic is a bike-share company offering a range of bicycles across the city. This analysis aims to understand user behavior and trends, focusing on **casual riders** and **annual members** to convert casual riders to member riders and help guide the marketing strategy.
+
+## PHASE 1: ASK
+
+### **Business Task:**
+
+#### How can cyclistic maximize the number of annual memberships?
+
+### **Consider Key stack-holders:**
+
+#### Lily Moreno: director of marketing, Cyclistic marketing analytics team,Cyclistic executive team.
+
+## PHASE 2: PREPARE
+
+### Data Collection
+
+-   I downloaded the raw data for the year 2022, divided into monthly `.csv` files.
+-   Each file contained trip-level information, including ride details, user types, and timestamps.
+
+## Data Cleaning in Excel
+
+The data cleaning process was performed in Microsoft Excel. The following steps were taken:
+
+1.  **Removing Unnecessary Columns**:
+    -   Dropped columns such as `start_station_name`, `start_station_id`, `end_station_name`,`end_station_id`,`start_lat`,`start_lng`,`end_lat`,`end_lng`etc., as they were not required for this analysis because the data in these columns are not complete.
+2.  **Handling Missing Values**:
+    -   Removed rows containing `NA` values in critical columns like `ride_id`, `rideable_type`, or `member_casual`.
+3.  **Removed Duplicate Entries**:
+    -   Duplicate entries in some of the files were identified and subsequently removed to ensure data accuracy and integrity.
+
+This cleaned files serves as the foundation for my analysis and will be imported into R for further analysis for trends in user behavior.
+
+## PHASE 3: PROCESS
+
+-   First we are going to install packages and upload our data into r.
+
+```{r}
+# Load the tidyverse package
+library(tidyverse)
+
+# The data from all 12 CSV files have been imported and are now being combined into a single dataset.
+all_trips <- bind_rows(Jan_2022,Feb_2022,Mar_2022,Apr_2022,May_2022,Jun_2022,July_2022,Aug_2022,Sep_2022,Oct_2022,Nov_2022,Dec_2022)
+
+```
+
+```{r}
+# Let's take a peek into the data now.
+summary(all_trips)
+```
+
+```{r}
+head(all_trips)
+```
+
+```{r}
+# First let's make a function to convert seconds into time for `ride_length column`.
+seconds_to_hms <- function(seconds) {
+  if (!is.numeric(seconds)) {
+    stop("Input must be numeric")
+  }
+  
+  hours <- floor(seconds / 3600)
+  minutes <- floor((seconds %% 3600) / 60)
+  secs <- round(seconds %% 60)
+  
+  # Format the time
+  sprintf("%02d:%02d:%02d", hours, minutes, secs)
+}
+```
+
+```{r}
+# We are going to add columns `ride_length_seconds`, `ride_length` and `weekday`.
+all_trips <- all_trips %>%
+  mutate(ride_length_seconds = as.numeric(difftime(ended_at, started_at, units = "sec")))
+
+all_trips <- all_trips %>%
+  mutate(ride_length = sprintf("%02d:%02d:%02d",
+                                    ride_length_seconds %/% 3600,
+                                    (ride_length_seconds %% 3600) %/% 60,
+                                    ride_length_seconds %% 60))
+
+all_trips$day_of_week <- wday(all_trips$started_at)
+head(all_trips, 10)
+```
+
+## PHASE 4: ANALYZE
+
+-   In this phase we are going to do descriptive analysis and see what insight we gain from the data.
+
+```{r}
+# Let's perform a descriptive analysis. Since the data is initially in seconds, we will convert it to a time format for better readability.
+Descriptive_analysis <- all_trips %>%
+  summarize(
+    mean_ride_length = mean(ride_length_seconds, na.rm = TRUE),
+    median_ride_length = median(ride_length_seconds, na.rm = TRUE),
+    max_ride_length = max(ride_length_seconds, na.rm = TRUE),
+    min_ride_length = min(ride_length_seconds, na.rm = TRUE)
+  ) %>%
+  mutate(mean_ride_length_time = seconds_to_hms(mean_ride_length) %>%
+           format(format = "%H:%M:%S"),
+         median_ride_length_time = seconds_to_hms(median_ride_length) %>%
+           format(format = "%H:%M:%S"),
+         max_ride_length_time = seconds_to_hms(max_ride_length) %>%
+           format(format = "%H:%M:%S"),
+         min_ride_length_time = seconds_to_hms(min_ride_length) %>%
+           format(format = "%H:%M:%S")
+  )
+head(Descriptive_analysis)
+```
+
+-   It appears that the data is displaying unexpected minimum and maximum values. Let's see maximum rides.
+
+```{r}
+maximum_rides <- all_trips %>% arrange(desc(ride_length_seconds))
+head(maximum_rides,10)
+```
+
+-   The docked bikes are showing unexpected results, taking hours, possibly due to issues such as data entry errors, incorrect timestamps, or outliers in ride duration. This could happen if the start and end times are recorded inaccurately, leading to unusually long ride durations. those are total 5361 entires and also these entries csv file is attached on github name Extra_hours.
+
+```{r}
+negative_rides <- all_trips %>% filter(ride_length_seconds < 0)
+head(negative_rides, 10)
+```
+
+-   We have identified 100 entries with negative time values, which we have decided to remove as they may distort the results. Additionally, we have filtered out any entries where the ride duration exceeds 24 hours, as these are considered outliers for our analysis.
+
+```{r}
+# Here we will remove those unusual long rides duration and negative ride length
+all_trips$ride_length_seconds <- abs(all_trips$ride_length_seconds) 
+
+all_trips$Extra_Hours <- ifelse(all_trips$member_casual > 86400, all_trips$ride_length_seconds - 86400, NA)
+nrow(all_trips[all_trips$ride_length_seconds >= 86400,])
+Extra_hours <- all_trips[all_trips$ride_length_seconds >= 86400,]
+all_trips <- all_trips[all_trips$ride_length_seconds < 86400,]
+```
+
+```{r}
+# Now let's see summary statistics after removing unexpected max right length and negative ride length.
+summary_statistics <- all_trips %>%
+  group_by(member_casual) %>%
+  summarize(
+    mean_ride_length = mean(ride_length_seconds),
+    median_ride_length = median(ride_length_seconds),
+    max_ride_length = max(ride_length_seconds),
+    min_ride_length = min(ride_length_seconds)
+  ) %>%
+  mutate(
+    mean_ride_length_time = seconds_to_hms(mean_ride_length) %>%
+      format(format = "%H:%M:%S"),
+    median_ride_length_time = seconds_to_hms(median_ride_length) %>%
+      format(format = "%H:%M:%S"),
+    max_ride_length_time = seconds_to_hms(max_ride_length) %>%
+      format(format = "%H:%M:%S"),
+    min_ride_length_time = seconds_to_hms(min_ride_length) %>%
+      format(format = "%H:%M:%S")
+  )
+print(summary_statistics)
+```
+
+-   Now we are going to aggregate the data.
+
+```{r}
+# Let's aggregate `ride_length_seconds`, `member_casual`, and `day_of_week`.
+average_ride_length <- aggregate(all_trips$ride_length_seconds ~ all_trips$member_casual + all_trips$day_of_week, FUN = mean)
+
+average_ride_length <- average_ride_time %>%
+  mutate('all_trips$ride_length_time' = seconds_to_hms(`all_trips$ride_length_seconds`))
+print(average_ride_length)
+```
+
+```{r}
+# Let's calculate average ride length for the users.
+average_ride_length <- all_trips %>%
+  group_by(member_casual) %>%
+  summarize(average_ride_length = mean(ride_length_seconds))
+
+average_ride_length <- average_ride_length %>%
+  mutate(average_ride_length_time = seconds_to_hms(average_ride_length) %>%
+           format(format = "%H:%M:%S"))
+print(average_ride_length)
+```
+
+```{r}
+# Now let's calculate the total rides taken by users.
+total_rides <- all_trips %>%
+  group_by(day_of_week, member_casual) %>%
+  summarize(count_of_rides = n())
+print(total_rides)
+```
+
+```{r}
+# Let's see how users use bikes differently.
+total_rides <- all_trips %>%
+  group_by(day_of_week, member_casual) %>%
+  summarize(count_of_rides = n())
+print(bike_usage)
+```
+
+-   we have done with the analysis let's download the data because we are going to do visualization on Tableau.
+
+```{r}
+# Downloading the files.
+write.csv(average_ride_length, "average_ride_length.csv", row.names = FALSE)
+write.csv(average_ride_time, "average_ride_time.csv", row.names = FALSE)
+write.csv(bike_usage, "bike_usage.csv", row.names = FALSE)
+write.csv(Descriptive_analysis, "Descriptive_analysis.csv", row.names = FALSE)
+write.csv(Extra_hours,"Extra_hours.csv", row.names = FALSE)
+write.csv(summary_statistics, "summary_statistics.csv", row.names = FALSE)
+write.csv(total_rides, "total_rides.csv", row.names = FALSE)
+write.csv(all_trips, "all_rides.csv", row.names = FALSE)
+```
+
+## PHASE 5: SHARE
+
+-   I chose Tableau because it provides a clearer and more interactive view of my data. ggplot2, while powerful for static visualizations, often requires significant customization to untangle complex datasets, which can be time-consuming. Tableau's user-friendly interface, real-time capabilities, and ability to handle large datasets seamlessly make it the ideal tool for my analysis and presentation needs.
+-   To view the visualizations of the data, please refer to the PNG files available on the GitHub repository.
+
+#### Results and Findings:
+
+-   **Usage Patterns:** Casual riders tend to use the bikes more on weekends, while members have a more consistent usage pattern throughout the week. Additionally, casual riders prefer electric bikes, while members show a preference for classic bikes.
+
+-   **Ride Duration:** Casual riders typically have longer ride durations than members.
+
+-   **Analysis Summary:**
+
+1.  **Classic Bikes:** Classic bikes are used by both casual and member users. However, member users show a higher and more consistent usage pattern across the week compared to casual users. **Member users:** The highest number of rides is observed on day 3 (Wednesday), with 268,250. Usage remains relatively stable, with minor fluctuations, ending the week with 227,226 rides on day 7 (Sunday). **Casual users:** Usage starts strong on day 1 (Monday) with 158,107 rides but experiences a significant drop in the middle of the week, reaching a low of 95,820 rides on day 3 (Wednesday). There's a recovery towards the end of the week, with 196,665 rides on day 7 (Sunday). **Interpretation:** Members prefer classic bikes for commuting, showing a steady pattern throughout the week, while casual users, likely influenced by external factors like weather or events, show more variability.
+
+2.  **Docked Bikes** Docked bikes are almost exclusively used by casual users, with very limited or no usage by members. **Member users:** No significant usage was observed. **Casual users:** The number of rides starts at 35,295 on day 1 (Monday) and decreases steadily, hitting a low of 17,155 on day 4 (Thursday). Usage then increases towards the weekend, peaking at 40,505 rides on day 7 (Sunday). **Interpretation:** Docked bikes are primarily favored by casual users, especially during the weekend, possibly for leisure or recreational activities. The lack of member usage suggests that this bike type may not meet the needs or preferences of regular commuters.
+
+3.  **Electric Bikes** Electric bikes are popular among both casual and member users, with member users again showing higher engagement throughout the week. **Member users:** Electric bike usage starts strong with 225,937 rides on day 2 (Tuesday). The number of rides peaks at 264,806 on day 5 (Friday) and then slightly decreases to 215,949 on day 7 (Sunday). **Casual users:** Usage starts at 186,132 rides on day 1 (Monday) but shows a dip in the middle of the week, reaching 149,865 rides on day 3 (Wednesday). There’s a steady increase towards the end of the week, with 235,062 rides on day 7 (Sunday). **Interpretation:** Electric bikes are well-utilized by both user groups, with members consistently favoring them for their likely convenience and speed. Casual users also show a strong preference, particularly towards the weekend, indicating a possible combination of commuting and leisure use.
+
+## PHASE 6: ACT
+
+#### CONCLUSION:
+
+The analysis of bike usage across different types and user groups reveals distinct patterns: - Classic Bikes are favored by members for consistent use throughout the week, with casual users showing more fluctuation. - Docked Bikes are predominantly used by casual users, particularly during the weekend, while members show little to no interest. - Electric Bikes are popular among both casual and member users, with members showing a higher and more consistent usage.
+
+These insights can inform operational decisions, such as bike availability, marketing strategies, and membership promotions, ensuring that the needs of both casual and member users are met effectively.
+
+#### RECOMMENDATIONS:
+
+-   Cyclistic should focus on converting casual riders to annual members by promoting weekday benefits.
+-   Increase availability of classic bikes during peak casual rider times.
+-   Launch targeted marketing campaigns for casual riders during weekends.
