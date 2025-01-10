@@ -1,4 +1,4 @@
-# Cyclistic Bike-share Analysis Project
+# Optimizing Bike Usage Trends for Targeted Marketing and Revenue Growth
 ## Overview
 This project analyzes the cyclistic bike-share dataset to determine how can cyclistic maximize the number of annual memberships  by converting casual riders to members and uncovering usage patterns among casual and member users. The goal is to understand user behavior to improve marketing strategies and operational efficiency.
 
