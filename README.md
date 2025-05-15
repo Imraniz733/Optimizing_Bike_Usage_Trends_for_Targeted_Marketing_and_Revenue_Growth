@@ -1,8 +1,9 @@
 # Optimizing Bike Usage Trends for Targeted Marketing and Revenue Growth
+
 ## Overview
 This project analyzes the cyclistic bike-share dataset to determine how can cyclistic maximize the number of annual memberships  by converting casual riders to members and uncovering usage patterns among casual and member users. The goal is to understand user behavior to improve marketing strategies and operational efficiency.
 
-## **For a detailed explanation including code refer to the full interactive report: 👉 [ To view complete Interactive report](Cyclistic-Bikeshare-Analysis.pdf).**
+**For a detailed explanation including code refer to the full interactive report: 👉 [ To view complete Interactive report](Cyclistic-Bikeshare-Analysis.pdf).**
 
 ## Project Description
 Cyclistic is a bike-sharing program in Chicago that features more than 5,800 bicycles and 600 docking stations. This analysis focuses on understanding how casual riders and annual members use Cyclistic bikes differently. The insights derived from this project will help Cyclistic's marketing team design targeted campaigns to convert casual riders into annual members.
